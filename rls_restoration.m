@@ -52,7 +52,7 @@ up_guess = interp2(Xx,Yy, gobs(:,:,1), XXI,YYI, 'bil');
 
 % fest=up_guess;
 
-SR_IMG = up_guess;
+% SR_IMG = up_guess;
 
 min_gt = min(g_truth(:));
 max_gt = max(g_truth(:));
@@ -76,7 +76,7 @@ while iter < max_iter
         
         xshift = Rvecs(1,1,i); yshift=Rvecs(2,1,i); rot=Rvecs(3,1,i);
         
-        temp = imtranslate(X, -[(us_factor * xshift), (us_factor * yshift)]);
+        temp = imtranslate(X, [(us_factor * xshift), (us_factor * yshift)], 'bilinear');
         
         temp = imrotate(temp, rot, 'bilinear', 'crop');
         
@@ -86,13 +86,15 @@ while iter < max_iter
         temp = temp(1:us_factor:end, 1:us_factor:end);
         
         temp = temp - gobs(:,:,i);
-        temp = imresize(temp, us_factor, 'box');
+        [ss,ts]=size(X);
+        temp = imresize(temp, [ss,ts], 'bilinear');
         
         %temp = PSF' * temp;
         temp = imfilter(temp, sharpen, 'replicate', 'same');
         
         temp = imrotate(temp, -rot, 'bilinear', 'crop');
-        G = G + imtranslate(temp, [(us_factor * xshift), (us_factor * yshift)]);
+        
+        G = G + imtranslate(temp, -[(us_factor * xshift+1), (us_factor * yshift)], 'bilinear');
     end
 
     % Now that we have the gradient, we will go in its direction with a step
@@ -100,7 +102,7 @@ while iter < max_iter
     X = X - (alpha) * G;   
     %max(X(:))
     %max(G(:))
-    X = X / max(X(:));
+%     X = X / max(X(:));
     delta = norm(X-X_prev)/norm(X);
     E=[E; iter delta];
     cost(iter) = delta;

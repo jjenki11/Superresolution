@@ -18,8 +18,8 @@ ds_f=5;
 % border padding in generated images (optional)
 pad=0;
 
-testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
-[registered_set, r_vecs] = RegisterImageSet(testImages, .1, 10);
+% testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
+% [registered_set, r_vecs] = RegisterImageSet(testImages, .1, 10);
 
 % gobs will be all images put together
 gobs=registered_set;
