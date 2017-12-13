@@ -1,4 +1,4 @@
-function [ fest, cost ] = rls_restoration( g_obs, alpha, num_its, us_factor, padding, new_sz )
+function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, padding, new_sz )
 %
 % [ fest, cost ] = rls_restoration( gobs, psf, alpha, num_its )
 %
@@ -19,9 +19,9 @@ function [ fest, cost ] = rls_restoration( g_obs, alpha, num_its, us_factor, pad
 % Author: Dr. Russell C. Hardie
 % University of Dayton
 
-[lrsy,lrsx] = size(g_obs);
+% [lrsy,lrsx] = size(g_obs);
 
-gobs = g_obs(padding:(lrsy+1)-padding, padding:(lrsx+1)-padding);
+% gobs = g_obs(padding:(lrsy+1)-padding, padding:(lrsx+1)-padding);
 
 figure,
 imagesc(gobs)
@@ -69,14 +69,14 @@ figure,
 imagesc(gobs);
 
 
-[X,Y] = meshgrid([1:oy],[1:ox]);
+[X,Y] = meshgrid([1:ox],[1:oy]);
 
 % size([X,Y])
-% XI = linspace(1,oy, us_factor*oy)
-XI = [1:new_sz(1,1)];
+XI = linspace(1,ox, us_factor*oy);
+% XI = [1:new_sz(1,1)];
 % pause
-% YI = linspace(1,ox, us_factor*ox)'
-YI = [1:new_sz(1,2)];
+YI = linspace(1,oy, us_factor*ox)';
+% YI = [1:new_sz(1,2)]';
 
 
 size(XI)
@@ -89,7 +89,7 @@ pause;
 %------------------%
 
 % Create initial image estimate
-fest = interp2(X,Y', gobs, XI,YI', 'bil');
+fest = interp2(X,Y, gobs, XI,YI, 'bil');
 
 figure,
 imagesc(fest)
