@@ -1,4 +1,4 @@
-function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, padding, new_sz )
+function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, new_sz )
 %
 % [ fest, cost ] = rls_restoration( gobs, psf, alpha, num_its )
 %
@@ -23,9 +23,9 @@ function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, padd
 
 % gobs = g_obs(padding:(lrsy+1)-padding, padding:(lrsx+1)-padding);
 
-figure,
-imagesc(gobs)
-pause;
+% figure,
+% imagesc(gobs)
+% pause;
 
 % size of image
 [lrsy,lrsx] = size(gobs);
@@ -65,25 +65,10 @@ lap_lap = [0     0    1/16 0   0
 % interpoloate to hi res
 [oy,ox]= size(gobs);
 
-figure,
-imagesc(gobs);
-
-
 [X,Y] = meshgrid([1:ox],[1:oy]);
+XI = linspace(1,ox, us_factor*ox);
+YI = linspace(1,oy, us_factor*oy)';
 
-% size([X,Y])
-XI = linspace(1,ox, us_factor*oy);
-% XI = [1:new_sz(1,1)];
-% pause
-YI = linspace(1,oy, us_factor*ox)';
-% YI = [1:new_sz(1,2)]';
-
-
-size(XI)
-size(YI)
-% size([XI';YI])
-pause;
-% pause
 %------------------%
 % initial estimate %
 %------------------%

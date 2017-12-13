@@ -4,7 +4,9 @@ function [rot_img] = RotateImage(imagepad, angle)
     midx=ceil((ncols+1)/2);
     midy=ceil((nrows+1)/2);  
     
-    degree = angle*(pi/180);
+    % we have to leave it in radians to assume the pixel spacing is 1
+    % (T1, T2)
+    degree = angle;
     
     Mr = [cos(degree) sin(degree); -sin(degree) cos(degree)]; 
 
