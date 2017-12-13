@@ -152,7 +152,7 @@ for idx = 1:rz
         %   show difference
     figure(3),
     imagesc(g_truth - fest), colormap 'gray'; colorbar   
-    
+    pause(1/17);
 end
 
 % figure,
