@@ -22,7 +22,7 @@ function varargout = superresolution_gui(varargin)
 
 % Edit the above text to modify the response to help superresolution_gui
 
-% Last Modified by GUIDE v2.5 13-Dec-2017 13:48:32
+% Last Modified by GUIDE v2.5 13-Dec-2017 15:03:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -592,5 +592,3 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
