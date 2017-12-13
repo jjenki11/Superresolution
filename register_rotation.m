@@ -23,6 +23,10 @@ function [final_R,im2] = register_rotation( image1, image2, thresh, buff );
 % Author: Jeff Jenkins
 %   Based on register_shift by Russell Hardie et. al
 % June 1996, modified 12/12/2017
+
+% size(image1)
+% size(image2r)
+
 %---------------------------------%
 % Estimate the discrete gradients %
 %---------------------------------%

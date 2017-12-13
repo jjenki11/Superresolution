@@ -2,6 +2,8 @@
 function [out,Rest] = RegisterImageSet(imgs, thresh, pad) 
     [sy,sx,sz] = size(imgs);  out =[]; Rest =[];
     out(:,:,1) = imgs(:,:,1); Rest(:,:,1) = 0;
+    size(imgs)
+    
     hb = waitbar(0,'Please wait... Registering images');
     for idx=2:(sz)      
         fprintf('\nRegistering image %d of %d.',idx,(sz));

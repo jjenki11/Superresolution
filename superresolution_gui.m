@@ -80,11 +80,23 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global testImages
-global orig_img
-global registered_set
-global r_vecs
 
+global orig_img
+global rotations
+global x_shifts
+global y_shifts
+global testImages
+% im = string(get(handles.edit12, 'String'));
+ds_f = str2num(string(get(handles.edit6, 'String')));
+pad = str2num(string(get(handles.edit13, 'String')));
+%  disp(get(handles.listbox1,'value'));
+% testImages = ;
+
+conv_thresh = str2num(get(handles.edit2,'String'));
+max_pix_shift = str2num(get(handles.edit3,'String'));
+[registered_set, r_vecs] = RegisterImageSet(GenerateTransformedImages(orig_img, rotations, ...
+    x_shifts, y_shifts, ds_f,pad), conv_thresh, max_pix_shift);
+pause(2);
 % gobs will be all images put together
 % gobs=registered_set;
 ds_f = str2num(get(handles.edit6,'String'));
@@ -469,13 +481,7 @@ global rotations
 global x_shifts
 global y_shifts
 global orig_img
-% im = string(get(handles.edit12, 'String'));
-ds_f = str2num(string(get(handles.edit12, 'String')));
-pad = str2num(string(get(handles.edit13, 'String')));
-%  disp(get(handles.listbox1,'value'));
 
-testImages = GenerateTransformedImages(orig_img, rotations, ...
-    x_shifts, y_shifts, ds_f,pad);
 
 % --- Executes on button press in pushbutton6.
 function pushbutton6_Callback(hObject, eventdata, handles)
@@ -586,10 +592,5 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global registered_set
-global r_vecs
-global testImages
-conv_thresh = str2num(get(handles.edit2,'String'));
-max_pix_shift = str2num(get(handles.edit3,'String'));
 
-[registered_set, r_vecs] = RegisterImageSet(testImages, conv_thresh, max_pix_shift);
+
