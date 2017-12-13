@@ -1,5 +1,5 @@
 function [final_R,im2] = register_rotation( image1, image2, thresh, buff );
-% S = register_shift( image1, image2, thresh, buff );
+% S = register_rotation( image1, image2, thresh, buff );
 %
 % A. Schaum Registration Algorithm using Prewitt Operator. 
 % Uses Peleg's iterative estimation technique to treat large shift values
@@ -23,80 +23,59 @@ function [final_R,im2] = register_rotation( image1, image2, thresh, buff );
 % Author: Jeff Jenkins
 %   Based on register_shift by Russell Hardie et. al
 % June 1996, modified 12/12/2017
-
 %---------------------------------%
 % Estimate the discrete gradients %
 %---------------------------------%
-
 image1 =double(image1);
 image2 =double(image2);
-
 xkernel=(1/6)*[1 0 -1
                1 0 -1
                1 0 -1];
-
 ykernel=(1/6)*[1  1  1
                0  0  0
               -1 -1 -1];
-
 gx=conv2(image1,xkernel,'same');
 gy=conv2(image1,ykernel,'same');
-
 %-----------------------------------------------%
 % Cut out center because of later shift effects %
 %-----------------------------------------------%
-
 [fully,fullx]=size(gx);   % old size
 gx=gx(buff:fully-buff+1,buff:fullx-buff+1);
 gy=gy(buff:fully-buff+1,buff:fullx-buff+1);
 im1=image1(buff:fully-buff+1,buff:fullx-buff+1);
-
-
 [ydim,xdim]=size(im1); % new smaller size 
-
 %-----------------------%
 % Generate the M matrix %
 %-----------------------%
 ssx=buff:fully-buff+1; ssy=buff:fullx-buff+1;
-
 %   We can do this because we are performing rotation in pixel spacing of 1
 T1 = 1; T2 = 1;
-
 hb=floor(max(size(ssy(:)))/2);
 ha=floor(max(size(ssx(:)))/2);
-
 for b=1:max(size(ssy(:)))
     for a=1:max(size(ssx(:)))
         ghaty(a,b) = (b-hb)*T1*gy(a,b);
         ghatx(a,b) = (a-ha)*T2*gx(a,b);
     end
 end
-
 g_bar = ghaty - ghatx;
-
 gbar_gx = sum(sum(g_bar.*gx));
 gbar_gy = sum(sum(g_bar.*gy));
-
 gx_2 = sum(sum(gx.^2));
 gy_2 = sum(sum(gy.^2));
 gbar_2  = sum(sum(g_bar.^2));
-
 cross=sum(sum(gx.*gy));
-
 M=[ gx_2,    cross,   gbar_gx;
     cross,   gy_2,    gbar_gy;
     gbar_gx, gbar_gy, gbar_2];
-
 %---------------------------%
 % Initialize loop constants %
 %---------------------------%
 count=0; % Number of times through loop
 stop=0;  % Loop stop flag
-
 im2=(image2);   % start with the ``warped'' image being the full second image
 Rn=zeros(3,1); % set initial shift estimates to zero
 Rold=Rn;
-
 ykprev=zeros(size(im1));
 %---------------------------%
 % Begin iterative estimates %
@@ -105,8 +84,6 @@ while stop~=1
   count=count+1;
   % calculate the difference image over the interior region     
     yk=double(im2(buff:fully-buff+1,buff:fullx-buff+1)-im1);
-%     figure(8), %imshowpair(im2(buff:fully-buff+1,buff:fullx-buff+1), im1);
-%      imagesc(yk), colormap 'gray', title('difference between update and reference'), colorbar
     act_yk=abs(double(ykprev-yk));
   % Generate the V matrix
     V=[ sum(sum( yk.*gx ));
@@ -123,9 +100,7 @@ while stop~=1
     check_val = sqrt(sum((Rn-Rold).^2)) / sqrt(sum(Rold.^2));          
   % See if its time to stop or warp and continue
   if count > 500 | (check_val <= thresh) | sum(act_yk(:))<eps   %| (nnz(isnan(check_val)) >0)
-    stop=1;      
-    count   ;
-    check_val;
+    stop=1;
     sum(act_yk(:));
     im2(find(isnan(im2))) = 0;    
      im2 = interp2( W,Z,im2, XI,YI, 'bilinear' ); 

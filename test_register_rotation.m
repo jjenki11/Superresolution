@@ -1,11 +1,17 @@
 %   Testing register_rotation
-close all;
+% close all;
 % clear all;
 
 disp('now doing dataset 1...')
 
 % im = 'Data2/shower_img_ref.jpg';
 im = 'peppers.png';
+
+
+
+
+
+
 orig_img = double(rgb2gray(imread(im)));
 % orig_img = double(imread(im));
 %   20 seperate images constructed with the following rot,shift(x,y) vals
@@ -19,6 +25,7 @@ ds_f=5;
 pad=0;
 
 % testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
+% break;
 % [registered_set, r_vecs] = RegisterImageSet(testImages, .1, 10);
 
 % gobs will be all images put together
@@ -48,9 +55,3 @@ title('Observed')
 subplot(224)
 imagesc(SR_Img), colormap 'gray'
 title('Superresolution Image');
-
-
-
-
-
-

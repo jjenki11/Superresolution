@@ -135,7 +135,3 @@ if(do_inspect == 1)
     figure(7), imagesc((trans_img));
     figure(8), imagesc(((trans_img) - downsampled_HR));    
 end
-
-%   They are close in the SSD sense, but I have only looked at image index
-%   5 and i doubt a global similarity metric would tell us how to implement
-%   what may already be in the paper.
