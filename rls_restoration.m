@@ -19,29 +19,18 @@ function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, g_tr
 % Author: Dr. Russell C. Hardie
 % University of Dayton
 
-% [lrsy,lrsx] = size(g_obs);
-
-% gobs = g_obs(padding:(lrsy+1)-padding, padding:(lrsx+1)-padding);
-
-% figure,
-% imagesc(gobs)
-% pause;
-
-% size of image
-[lrsy,lrsx] = size(gobs);
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   TBD unused...
 psf = zeros(5,5)/25;
 psf(1:4,1:4) = 1/ 16;
-
 % Get size info about the system psf
 [psfy,psfx] = size(psf);
-
 % Determine the required border padding when using psf.
 BPy = (psfy-1)/2;
 BPx = (psfx-1)/2;
-
 % flip PSF for correlation
 psf_flip = fliplr( flipud( psf ) );
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %--------------------------------%
 % Define all convolution kernels %
@@ -64,6 +53,8 @@ lap_lap = [0     0    1/16 0   0
        
 % the first image will be our 'first guess'
 guess = gobs(:,:,1);
+reg_imgs = gobs(:,:,2:end);
+[ry,rx,rz]=size(reg_imgs);
 
 % interpoloate to hi res
 [oy,ox]= size(guess);
@@ -88,91 +79,90 @@ max_gt = max(g_truth(:));
 
 fest = imlin2(up_guess, min_gt, max_gt);
 
-figure,
-imagesc(fest), colormap 'gray'
-pause;
-figure,
-imagesc(g_truth), colormap 'gray'
-pause
-size(fest)
-size(g_truth)
-figure,
-imagesc(g_truth - fest), colormap 'gray', colorbar
-pause;
+for idx = 1:rz
+    
+    g_guess = interp2(X,Y, reg_imgs(:,:,idx), XXI,YYI, 'bil');    
+    stretched = imlin2(g_guess, min_gt, max_gt);
+    
+    %gest = AverageBlocksInImage(stretched, 5);
 
 %-------------------------------------%
 % Begin iterations to update estimate %
 %-------------------------------------%
+    for k = 1 : num_its
+        disp(['***Beginning iteration ' int2str(k)])
+        %----------------------------%
+        % Put estimate through model %
+        %----------------------------%
+        % Current estimate put through model (estimated gobs data)
+        gest = conv2(padarray(stretched,[BPy,BPx],'both','symmetric'),psf,'valid');
+        % Compute the error image
+        error = gest - up_guess;
 
-for k = 1 : num_its
-    
-    disp(['***Beginning iteration ' int2str(k)])
+        % Compute roughness of current estimate
+        fest_lap = conv2(padarray(fest,[1,1],'both','symmetric'),lap,'valid');
 
-    %----------------------------%
-    % Put estimate through model %
-    %----------------------------%
+        % cost(k) = 1/2 * 
+        %   loop over every pixel in all images 
+        %       take current estimated image (hr bilinear interpolated 1st
+        %       image) and apply weights (after rot and trans the weights are all 1, then
+        %       perform AverageBlocksInImage 
 
-    % Current estimate put through model (estimated gobs data)
-%     gest = conv2(padarray(fest,[BPy,BPx],'both','symmetric'),psf,'valid');
-    
-    % Compute the error image
-%     error = gest - gobs;
-    
-    % Compute roughness of current estimate
-    fest_lap = conv2(padarray(fest,[1,1],'both','symmetric'),lap,'valid');
-    
-    % cost(k) = 1/2 * 
-    %   loop over every pixel in all images 
-    %       take current estimated image (hr bilinear interpolated 1st
-    %       image) and apply weights (after rot and trans the weights are all 1, then
-    %       perform AverageBlocksInImage 
-    
-    %   z is current estimate (fest)
-    
-    % Compute the cost for this iteration
-    cost(k) = sum(error(:).^2) + alpha*sum(fest_lap(:).^2);
+        %   z is current estimate (fest)
 
-    %------------------%
-    % Compute gradient %
-    %------------------%
-        
+        % Compute the cost for this iteration
+        cost(k) = sum(error(:).^2) + alpha*sum(fest_lap(:).^2);
+
+        %------------------%
+        % Compute gradient %
+        %------------------%
+
     % There are two terms to the gradient:
     % 1.)  The linear equation gradient  (grad1)
     % 2.)  The regularization (smoothness) gradient (grad2).
+        % Correlate error with PSF
+        grad1 = conv2(padarray(error,[BPy,BPx],'both','symmetric'),...
+            psf_flip,'valid');
+        % Compute the regularization gradient part
+        grad2 = conv2(padarray(fest,[2,2],'both','symmetric'),lap_lap,'valid');        
+        % Total gradient
+        grad = grad1 + alpha*grad2;
+        %-----------------------------%
+        % Determine optimal step size %
+        %-----------------------------%
+        % Gradient through model
+        gamma = conv2(padarray(grad,[BPy,BPx],'both','symmetric'),psf,'valid');
+        part1 = sum(gamma(:).*error(:));
+        part2 = sum(gamma(:).^2);
+        % Roughness of gradient
+        gbar = conv2(padarray(grad,[1,1],'both','symmetric'),lap,'valid');
+        part3 = alpha*sum(fest_lap(:).*gbar(:));
+        part4 = alpha*sum(gbar(:).^2);
+        % Step size
+        epsilon = (part1+part3)/(part2+part4);
+        %-----------------------%
+        % Update image estimate %
+        %-----------------------%
+        fest = fest - epsilon*(grad);
+    end
 
-    % Correlate error with PSF
-    grad1 = conv2(padarray(error,[BPy,BPx],'both','symmetric'),...
-        psf_flip,'valid');
-
-    % Compute the regularization gradient part
-    grad2 = conv2(padarray(fest,[2,2],'both','symmetric'),lap_lap,'valid');
-
-    % Total gradient
-    grad = grad1 + alpha*grad2;
-
-    %-----------------------------%
-    % Determine optimal step size %
-    %-----------------------------%
-    
-    % Gradient through model
-    gamma = conv2(padarray(grad,[BPy,BPx],'both','symmetric'),psf,'valid');
-     
-    part1 = sum(gamma(:).*error(:));
-    part2 = sum(gamma(:).^2);
-
-    % Roughness of gradient
-    gbar = conv2(padarray(grad,[1,1],'both','symmetric'),lap,'valid');
-    
-    part3 = alpha*sum(fest_lap(:).*gbar(:));
-    part4 = alpha*sum(gbar(:).^2);
-    
-    % Step size
-    epsilon = (part1+part3)/(part2+part4);
-
-    %-----------------------%
-    % Update image estimate %
-    %-----------------------%
-        
-    fest = fest - epsilon*(grad);
+        %   show update 
+    figure(2),
+    imagesc(fest), colormap 'gray'
+        %   show difference
+    figure(3),
+    imagesc(g_truth - fest), colormap 'gray'; colorbar   
     
 end
+
+% figure,
+% imagesc(fest), colormap 'gray'
+% pause;
+% figure,
+% imagesc(g_truth), colormap 'gray'
+% pause
+% size(fest)
+% size(g_truth)
+% figure,
+% imagesc(g_truth - fest), colormap 'gray', colorbar
+% pause;    
