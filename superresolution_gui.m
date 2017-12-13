@@ -89,6 +89,7 @@ global r_vecs
 gobs=registered_set;
 ds_f = str2num(get(handles.edit6,'String'));
 lambda = str2num(get(handles.edit7,'String'));
+rest_iters = str2num(string(get(handles.edit8, 'String')));
 %   seperate from registration
 [SR_Img,cost,ideal]=rls_restoration(gobs,lambda,rest_iters,ds_f,orig_img,r_vecs);
 imagesc(SR_Img, 'Parent', handles.axes4), colormap(gray(256));
@@ -574,5 +575,5 @@ global r_vecs
 global testImages
 conv_thresh = str2num(get(handles.edit2,'String'));
 max_pix_shift = str2num(get(handles.edit3,'String'));
-% rest_iters = str2num(string(get(handles.edit8, 'String')));
+
 [registered_set, r_vecs] = RegisterImageSet(testImages, conv_thresh, max_pix_shift);
