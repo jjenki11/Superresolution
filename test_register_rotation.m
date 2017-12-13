@@ -16,11 +16,10 @@ ds_f=5;
 pad=0;
 
 % testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
-% [registered_set] = RegisterImageSet(testImages, .1, 10);
+[registered_set] = RegisterImageSet(testImages, .1, 10);
 
 % gobs will be all images put together
 gobs=registered_set;
-% pause;
 
 %   seperate from registration
 % gobs = conv2( padarray(f,[pady,padx],'both','symmetric'),psf, 'valid' );% + randn(size(f))*1;% 
@@ -43,3 +42,9 @@ gobs=registered_set;
 % subplot(224)
 % imagesc(fest)
 % title('RLS Estimate');
+
+
+
+
+
+

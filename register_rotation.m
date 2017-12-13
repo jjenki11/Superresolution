@@ -102,7 +102,7 @@ while stop~=1
   count=count+1;
   % calculate the difference image over the interior region 
     yk=double(im2(buff:fully-buff+1,buff:fullx-buff+1)-im1);
-%     figure(8), imagesc(yk), colormap 'gray', title('difference between update and reference')
+    figure(8), imagesc(yk), colormap 'gray', title('difference between update and reference')
   % Generate the V matrix
     V=[ sum(sum( yk.*gx ));
         sum(sum( yk.*gy ));
@@ -111,8 +111,8 @@ while stop~=1
     Rn = Rn + local;    
     [sy,sx]=size(im2);
     [W,Z]=meshgrid( [1:sx],[1:sy] );    
-    nearest_x = round(Rn(1,1));
-    nearest_y = round(Rn(2,1));  
+    nearest_x = (Rn(1,1));
+    nearest_y = (Rn(2,1));  
     XI=[1-nearest_x:fullx-nearest_x];
     YI=[1-nearest_y:fully-nearest_y]';         
     check_val = sqrt(sum((Rn-Rold).^2)) / sqrt(sum(Rold.^2));          
@@ -125,6 +125,7 @@ while stop~=1
     final_R = Rn;
   else   % sub-pixelly rotate and then shift image2 according to latest estimate    
     % Get the values at the new coordinates        
+    rimg = imrotate(image2, -Rn(3,1)*(pi/180), 'crop');
     im2 = interp2( W,Z,RotateImage(image2, -Rn(3,1)), XI,YI, 'bic' );  
     im2(find(isnan(im2))) = 0;   
   end
