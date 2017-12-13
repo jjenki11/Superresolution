@@ -95,14 +95,22 @@ stop=0;  % Loop stop flag
 im2=(image2);   % start with the ``warped'' image being the full second image
 Rn=zeros(3,1); % set initial shift estimates to zero
 Rold=Rn;
+
+% pause
+yk = zeros(size(im1));
 %---------------------------%
 % Begin iterative estimates %
 %---------------------------%
 while stop~=1
   count=count+1;
   % calculate the difference image over the interior region 
+    ykprev = yk;
     yk=double(im2(buff:fully-buff+1,buff:fullx-buff+1)-im1);
-    figure(8), imagesc(yk), colormap 'gray', title('difference between update and reference')
+    figure(8), %imshowpair(im2(buff:fully-buff+1,buff:fullx-buff+1), im1);
+     imagesc(ykprev-yk), colormap 'gray', title('difference between update and reference'), colorbar
+    
+    act_yk=abs(double(ykprev-yk));
+%     sum(act_yk(:))
   % Generate the V matrix
     V=[ sum(sum( yk.*gx ));
         sum(sum( yk.*gy ));
@@ -113,11 +121,11 @@ while stop~=1
     [W,Z]=meshgrid( [1:sx],[1:sy] );    
     nearest_x = (Rn(1,1));
     nearest_y = (Rn(2,1));  
-    XI=[1-nearest_x:fullx-nearest_x];
-    YI=[1-nearest_y:fully-nearest_y]';         
+    XI=[1:fullx];
+    YI=[1:fully]';
     check_val = sqrt(sum((Rn-Rold).^2)) / sqrt(sum(Rold.^2));          
   % See if its time to stop or warp and continue
-  if count > 150 | (check_val <= thresh)%| (nnz(isnan(check_val)) >0)
+  if count > 500 | (check_val <= thresh) | sum(act_yk(:))<eps %| (nnz(isnan(check_val)) >0)
     stop=1;      
     count   
     im2(find(isnan(im2))) = 0;    
@@ -125,8 +133,7 @@ while stop~=1
     final_R = Rn;
   else   % sub-pixelly rotate and then shift image2 according to latest estimate    
     % Get the values at the new coordinates        
-    rimg = imrotate(image2, -Rn(3,1)*(pi/180), 'crop');
-    im2 = interp2( W,Z,RotateImage(image2, -Rn(3,1)), XI,YI, 'bic' );  
+    im2 = interp2( W,Z,imrotate(imtranslate(image2, [nearest_x, nearest_y]), -Rn(3,1), 'crop'), XI,YI, 'bil' );      
     im2(find(isnan(im2))) = 0;   
   end
 end
