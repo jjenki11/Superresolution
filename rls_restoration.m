@@ -60,10 +60,17 @@ while iter < max_iter
         temp = imrotate(temp, rot, 'bilinear', 'crop');        
         %temp = PSF * temp;
         temp = imfilter(temp, blur, 'replicate', 'same');        
-        temp = temp(1:us_factor:end, 1:us_factor:end);               
+        [syy,sxx] = size(temp);
+        [gyy,gxx] = size(gobs(:,:,i));
+        dy=syy/gyy
+        dx=sxx/gxx
+        temp = temp(1:dy:end, 1:dx:end);               
         [ss,ts]=size(X); 
+        size(gobs(:,:,i))
+        size(temp)
+        temp = temp - gobs(:,:,i);  
+        
         temp = imresize(temp, [ss,ts], 'bilinear');   
-        temp = temp - gobs(:,:,i);        
         %temp = PSF' * temp;
         temp = imfilter(temp, sharpen, 'replicate', 'same');        
         temp = imrotate(temp, -rot, 'bilinear', 'crop');        

@@ -84,6 +84,9 @@ while stop~=1
   count=count+1;
   % calculate the difference image over the interior region     
     yk=double(im2(buff:fully-buff+1,buff:fullx-buff+1)-im1);
+    figure(9),
+    imagesc(yk),colormap 'gray';
+    
     act_yk=abs(double(ykprev-yk));
   % Generate the V matrix
     V=[ sum(sum( yk.*gx ));
@@ -99,15 +102,15 @@ while stop~=1
     YI=[1:fully]';
     check_val = sqrt(sum((Rn-Rold).^2)) / sqrt(sum(Rold.^2));          
   % See if its time to stop or warp and continue
-  if count > 500 | (check_val <= thresh) | sum(act_yk(:))<eps   %| (nnz(isnan(check_val)) >0)
+  if count > 750 | (check_val <= thresh) | sum(act_yk(:))<eps   %| (nnz(isnan(check_val)) >0)
     stop=1;
     sum(act_yk(:));
     im2(find(isnan(im2))) = 0;    
-     im2 = interp2( W,Z,im2, XI,YI, 'bilinear' ); 
+%      im2 = interp2( W,Z,im2, XI,YI, 'bilinear' ); 
     final_R = Rn;
   else   % sub-pixelly rotate and then shift image2 according to latest estimate    
     % Get the values at the new coordinates    
-    a=imrotate(image2, -Rn(3,1), 'bilinear', 'crop');
+    a=imrotate(image2, -Rn(3,1)*1.5, 'bilinear', 'crop');
     im2=imtranslate(a, [nearest_x, nearest_y]);
     im2(find(isnan(im2))) = 0;   
     ykprev = yk;
