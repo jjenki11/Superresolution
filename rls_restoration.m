@@ -66,10 +66,7 @@ while iter < max_iter
         dx=sxx/gxx
         temp = temp(1:dy:end, 1:dx:end);               
         [ss,ts]=size(X); 
-        size(gobs(:,:,i))
-        size(temp)
-        temp = temp - gobs(:,:,i);  
-        
+        temp = temp - gobs(:,:,i);          
         temp = imresize(temp, [ss,ts], 'bilinear');   
         %temp = PSF' * temp;
         temp = imfilter(temp, sharpen, 'replicate', 'same');        
