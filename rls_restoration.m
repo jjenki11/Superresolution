@@ -1,4 +1,4 @@
-function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, new_sz )
+function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, g_truth )
 %
 % [ fest, cost ] = rls_restoration( gobs, psf, alpha, num_its )
 %
@@ -61,24 +61,45 @@ lap_lap = [0     0    1/16 0   0
            1/16 -1/2  5/4 -1/2 1/16
            0     1/8 -1/2  1/8 0
            0     0    1/16 0   0];
+       
+% the first image will be our 'first guess'
+guess = gobs(:,:,1);
 
 % interpoloate to hi res
-[oy,ox]= size(gobs);
+[oy,ox]= size(guess);
 
 [X,Y] = meshgrid([1:ox],[1:oy]);
-XI = linspace(1,ox, us_factor*ox);
-YI = linspace(1,oy, us_factor*oy)';
+XI = linspace(1,(ox), us_factor*(ox));
+YI = linspace(1,(oy), us_factor*(oy))';
 
 %------------------%
 % initial estimate %
 %------------------%
+[ygt,xgt] = size(g_truth);
 
-% Create initial image estimate
-fest = interp2(X,Y, gobs, XI,YI, 'bil');
+XXI=linspace(1,ox, xgt);
+YYI=linspace(1,oy, ygt)';
+
+% Create initial image estimate out of first image in set
+up_guess = interp2(X,Y, guess, XXI,YYI, 'bil');
+
+min_gt = min(g_truth(:));
+max_gt = max(g_truth(:));
+
+fest = imlin2(up_guess, min_gt, max_gt);
 
 figure,
-imagesc(fest)
+imagesc(fest), colormap 'gray'
 pause;
+figure,
+imagesc(g_truth), colormap 'gray'
+pause
+size(fest)
+size(g_truth)
+figure,
+imagesc(g_truth - fest), colormap 'gray', colorbar
+pause;
+
 %-------------------------------------%
 % Begin iterations to update estimate %
 %-------------------------------------%

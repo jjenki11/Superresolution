@@ -15,8 +15,8 @@ ds_f=5;
 % border padding in generated images (optional)
 pad=0;
 
-testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
-[registered_set] = RegisterImageSet(testImages, .1, 10);
+% testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
+% [registered_set] = RegisterImageSet(testImages, .1, 10);
 
 % gobs will be all images put together
 gobs=registered_set;
@@ -25,7 +25,7 @@ gobs=registered_set;
 %   seperate from registration
 % gobs = conv2( padarray(f,[pady,padx],'both','symmetric'),psf, 'valid' );% + randn(size(f))*1;% 
 % guess is first image (fixed)
-[fest,cost]=rls_restoration(gobs,.1,50,ds_f,size(orig_img));
+[fest,cost]=rls_restoration(gobs,.1,50,ds_f,orig_img);
 % 
 % 
 % figure
