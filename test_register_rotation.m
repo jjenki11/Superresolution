@@ -7,6 +7,7 @@ disp('now doing dataset 1...')
 % im = 'Data2/shower_img_ref.jpg';
 im = 'peppers.png';
 orig_img = double(rgb2gray(imread(im)));
+% orig_img = double(imread(im));
 %   20 seperate images constructed with the following rot,shift(x,y) vals
 rots=[0,2,5,-3,6,0,7,-4,0,3,1,-1,-5,2,0,-2,-6,3,-9,0];
 sh_x=[2,8,1,5,0,-7,8,-5,-1,3,0,4,-6,-2,0,-7,4,3,8,1];
@@ -17,34 +18,31 @@ ds_f=2;
 % border padding in generated images (optional)
 pad=0;
 
-% testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
-% [registered_set] = RegisterImageSet(testImages, .1, 10);
+testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
+[registered_set, r_vecs] = RegisterImageSet(testImages, .1, 10);
 
 % gobs will be all images put together
 gobs=registered_set;
 
 %   seperate from registration
-% gobs = conv2( padarray(f,[pady,padx],'both','symmetric'),psf, 'valid' );% + randn(size(f))*1;% 
-% guess is first image (fixed)
-[fest,cost]=rls_restoration(gobs,.1,100,ds_f,orig_img);
+[SR_Img,cost]=rls_restoration(gobs,.0001,100,ds_f,orig_img,r_vecs);
 % 
 % 
-% figure
-% subplot(221)
-% plot(cost)
-% xlabel('Iteration');
-% ylabel('Cost');
-% title('Cost Function');
-% subplot(222)
-% imagesc(f)
-% title('Ideal')
-% subplot(223)
-% imagesc(gobs)
-% title('Observed')
-% subplot(224)
-% imagesc(fest)
-
-% title('RLS Estimate');
+figure
+subplot(221)
+plot(cost)
+xlabel('Iteration');
+ylabel('Cost');
+title('Cost Function');
+subplot(222)
+imagesc(f)
+title('Ideal')
+subplot(223)
+imagesc(gobs(:,:,1))
+title('Observed')
+subplot(224)
+imagesc(SR_Img)
+title('Superresolution Image');
 
 
 

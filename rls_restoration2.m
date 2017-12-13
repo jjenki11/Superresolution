@@ -1,4 +1,4 @@
-function [ fest, cost ] = rls_restoration( gobs, psf, alpha, num_its )
+function [ fest, cost ] = rls_restoration2( gobs, psf, alpha, num_its )
 %
 % [ fest, cost ] = rls_restoration( gobs, psf, alpha, num_its )
 %
@@ -23,11 +23,14 @@ function [ fest, cost ] = rls_restoration( gobs, psf, alpha, num_its )
 [lrsy,lrsx] = size(gobs);
 
 % Get size info about the system psf
-[psfy,psfx] = size(psf);
+% [psfy,psfx] = size(psf);
 
 % Determine the required border padding when using psf.
-BPy = (psfy-1)/2;
-BPx = (psfx-1)/2;
+% BPy = (psfy-1)/2;
+% BPx = (psfx-1)/2;
+
+BPy=1;
+BPx=1;
 
 % flip PSF for correlation
 psf_flip = fliplr( flipud( psf ) );
@@ -56,6 +59,7 @@ lap_lap = [0     0    1/16 0   0
 %------------------%
 
 % Create initial image estimate
+% fest = base;
 fest = gobs;
 
 %-------------------------------------%
@@ -70,18 +74,21 @@ for k = 1 : num_its
     % Put estimate through model %
     %----------------------------%
 
-    % Current estimate put through model (estimated gobs data)
-    gest = conv2(padarray(fest,[BPy,BPx],'both','symmetric'),psf,'valid');
+%     % Current estimate put through model (estimated gobs data)
+%     gest = conv2(padarray(fest,[BPy,BPx],'both','symmetric'),psf,'valid');
 
+    gest = conv2(fest, psf, 'valid');
     % Compute the error image
     error = gest - gobs;
     
-    figure(123),
-    imagesc(error),colormap 'gray'
+%     figure(123),
+%     imagesc(error),colormap 'gray'
     
     % Compute roughness of current estimate
     fest_lap = conv2(padarray(fest,[1,1],'both','symmetric'),lap,'valid');
 
+    fest_lap = conv2(fest,lap,'valid');
+    
     % Compute the cost for this iteration
     cost(k) = sum(error(:).^2) + alpha*sum(fest_lap(:).^2);
 
@@ -96,10 +103,12 @@ for k = 1 : num_its
     % Correlate error with PSF
     grad1 = conv2(padarray(error,[BPy,BPx],'both','symmetric'),...
         psf_flip,'valid');
+    
+%     grad1 = conv2(error, psf_flip, 'valid');
 
     % Compute the regularization gradient part
-    grad2 = conv2(padarray(fest,[2,2],'both','symmetric'),lap_lap,'valid');
-
+%     grad2 = conv2(padarray(fest,[2,2],'both','symmetric'),lap_lap,'valid');
+    grad2 = conv2(fest, lap_lap,'same');
     % Total gradient
     grad = grad1 + alpha*grad2;
 
@@ -108,14 +117,14 @@ for k = 1 : num_its
     %-----------------------------%
     
     % Gradient through model
-    gamma = conv2(padarray(grad,[BPy,BPx],'both','symmetric'),psf,'valid');
-     
+%     gamma = conv2(padarray(grad,[BPy,BPx],'both','symmetric'),psf,'valid');
+     gamma = conv2(grad, psf, 'valid');
     part1 = sum(gamma(:).*error(:));
     part2 = sum(gamma(:).^2);
 
     % Roughness of gradient
-    gbar = conv2(padarray(grad,[1,1],'both','symmetric'),lap,'valid');
-    
+%     gbar = conv2(padarray(grad,[1,1],'both','symmetric'),lap,'valid');
+    gbar = conv2(grad,lap,'valid');
     part3 = alpha*sum(fest_lap(:).*gbar(:));
     part4 = alpha*sum(gbar(:).^2);
     

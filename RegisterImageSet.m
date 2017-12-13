@@ -1,11 +1,12 @@
 % rigidly register all but the first one to the first one
-function [out] = RegisterImageSet(imgs, thresh, pad) 
-    [sy,sx,sz] = size(imgs);  out =[];
-    out(:,:,1) = imgs(:,:,1);
-    for idx=1:(sz-1)      
-        fprintf('\n\nRegistering image %d of %d.',idx,(sz-1));
-       [Rest,res]=register_rotation(imgs(:,:,1),imgs(:,:,idx+1),thresh,pad);
-       out(:,:,idx+1) = res;
+function [out,Rest] = RegisterImageSet(imgs, thresh, pad) 
+    [sy,sx,sz] = size(imgs);  out =[]; Rest =[];
+    out(:,:,1) = imgs(:,:,1); Rest(:,:,1) = 0;
+    for idx=2:(sz)      
+        fprintf('\nRegistering image %d of %d.',idx,(sz));
+       [Rest,res]=register_rotation(double(imgs(:,:,1)),double(imgs(:,:,idx)),thresh,pad);
+       out(:,:,idx) = res;
+       Rest(:,:,idx) = Rest;
     end
     fprintf('\nDone with image registration...\n\n');
 end

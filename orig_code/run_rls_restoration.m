@@ -30,12 +30,12 @@ xlabel('Iteration');
 ylabel('Cost');
 title('Cost Function');
 subplot(222)
-im(f,0)
+imagesc(f), colormap 'gray',
 title('Ideal')
 subplot(223)
-im(gobs,0)
+imagesc(gobs), colormap 'gray',
 title('Observed')
 subplot(224)
-im(fest,0)
+imagesc(fest), colormap 'gray',
 title('RLS Estimate');
 
