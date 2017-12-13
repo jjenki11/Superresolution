@@ -21,8 +21,8 @@ function [ fest, cost ] = rls_restoration( gobs, alpha, num_its, us_factor, g_tr
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   TBD unused...
-psf = zeros(5,5)/25;
-psf(1:4,1:4) = 1/ 16;
+psf = -ones(5,5)/25;
+psf(3,3) = 1;
 % Get size info about the system psf
 [psfy,psfx] = size(psf);
 % Determine the required border padding when using psf.

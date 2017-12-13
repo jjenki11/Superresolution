@@ -18,7 +18,7 @@ ds_f=2;
 pad=0;
 
 % testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
-[registered_set] = RegisterImageSet(testImages, .1, 10);
+% [registered_set] = RegisterImageSet(testImages, .1, 10);
 
 % gobs will be all images put together
 gobs=registered_set;

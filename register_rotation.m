@@ -106,11 +106,11 @@ while stop~=1
   % calculate the difference image over the interior region 
     ykprev = yk;
     yk=double(im2(buff:fully-buff+1,buff:fullx-buff+1)-im1);
-    figure(8), imshowpair(im2(buff:fully-buff+1,buff:fullx-buff+1), im1);
+%     figure(8), imshowpair(im2(buff:fully-buff+1,buff:fullx-buff+1), im1);
 %      imagesc(ykprev-yk), colormap 'gray', title('difference between update and reference'), colorbar
     
     act_yk=abs(double(ykprev-yk));
-    sum(act_yk(:))
+%     sum(act_yk(:))
   % Generate the V matrix
     V=[ sum(sum( yk.*gx ));
         sum(sum( yk.*gy ));
@@ -125,7 +125,7 @@ while stop~=1
     YI=[1:fully]';
     check_val = sqrt(sum((Rn-Rold).^2)) / sqrt(sum(Rold.^2));          
   % See if its time to stop or warp and continue
-  if count > 500 | (check_val <= thresh) | sum(act_yk(:))<10e-3   %| (nnz(isnan(check_val)) >0)
+  if count > 700 | (check_val <= thresh) | sum(act_yk(:))<10e-3   %| (nnz(isnan(check_val)) >0)
     stop=1;      
     count   
     im2(find(isnan(im2))) = 0;    
