@@ -61,12 +61,13 @@ while iter < max_iter
         %temp = PSF * temp;
         temp = imfilter(temp, blur, 'replicate', 'same');        
         temp = temp(1:us_factor:end, 1:us_factor:end);               
-        [ss,ts]=size(X);             
-%         size(temp)
-%         size(gobs(:,:,i))
+        [ss,ts]=size(X); 
+        temp = imresize(temp, [ss,ts], 'bilinear');   
+        size(temp)
+        size(gobs(:,:,i))
 %         pause
         temp = temp - gobs(:,:,i);
-        temp = imresize(temp, [ss,ts], 'bilinear');   
+        
         %temp = PSF' * temp;
         temp = imfilter(temp, sharpen, 'replicate', 'same');        
         temp = imrotate(temp, -rot, 'bilinear', 'crop');        

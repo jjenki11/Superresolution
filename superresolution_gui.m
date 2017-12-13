@@ -86,14 +86,30 @@ global registered_set
 global r_vecs
 
 % gobs will be all images put together
-gobs=registered_set;
+% gobs=registered_set;
 ds_f = str2num(get(handles.edit6,'String'));
 lambda = str2num(get(handles.edit7,'String'));
 rest_iters = str2num(string(get(handles.edit8, 'String')));
 %   seperate from registration
-[SR_Img,cost,ideal]=rls_restoration(gobs,lambda,rest_iters,ds_f,orig_img,r_vecs);
+[SR_Img,cost,ideal]=rls_restoration(registered_set,lambda,rest_iters,ds_f,orig_img,r_vecs);
 imagesc(SR_Img, 'Parent', handles.axes4), colormap(gray(256));
 imagesc(ideal, 'Parent', handles.axes3), colormap(gray(256));
+
+figure
+subplot(221)
+plot(cost)
+xlabel('Iteration');
+ylabel('Cost');
+title('Cost Function');
+subplot(222)
+imagesc(ideal), colormap 'gray'
+title('Ideal')
+subplot(223)
+imagesc(registered_set(:,:,1)), colormap 'gray'
+title('Observed')
+subplot(224)
+imagesc(SR_Img), colormap 'gray'
+title('Superresolution Image');
 
 % test_register_rotation
 % imagesc(fest, 'Parent', handles.axes3), colormap(gray(256));
