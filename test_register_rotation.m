@@ -14,7 +14,7 @@ sh_x=[2,8,1,5,0,-7,8,-5,-1,3,0,4,-6,-2,0,-7,4,3,8,1];
 sh_y=[0,4,-6,-2,0,-7,4,3,8,1,2,8,1,5,0,-7,8,-5,-1,3,];
 
 % downsampling factor
-ds_f=2;
+ds_f=5;
 % border padding in generated images (optional)
 pad=0;
 
@@ -25,9 +25,14 @@ testImages = GenerateTransformedImages(im, rots, sh_x, sh_y, ds_f,pad);
 gobs=registered_set;
 
 %   seperate from registration
-[SR_Img,cost]=rls_restoration(gobs,.0001,100,ds_f,orig_img,r_vecs);
+[SR_Img,cost]=rls_restoration(gobs,.00001,100,ds_f,orig_img,r_vecs);
 % 
 % 
+
+% unknown shift...
+orig_img = circshift(orig_img, [0,-2]);
+SR_Img = circshift(SR_Img, [-5,-4]);
+
 figure
 subplot(221)
 plot(cost)
@@ -35,13 +40,13 @@ xlabel('Iteration');
 ylabel('Cost');
 title('Cost Function');
 subplot(222)
-imagesc(f)
+imagesc(imresize(gobs(:,:,1), size(orig_img), 'box')), colormap 'gray'
 title('Ideal')
 subplot(223)
-imagesc(gobs(:,:,1))
+imagesc(gobs(:,:,1)), colormap 'gray'
 title('Observed')
 subplot(224)
-imagesc(SR_Img)
+imagesc(SR_Img), colormap 'gray'
 title('Superresolution Image');
 
 

@@ -57,14 +57,7 @@ SR_IMG = up_guess;
 min_gt = min(g_truth(:));
 max_gt = max(g_truth(:));
 
-% [ygt,xgt]=size(g_truth);
-
 imOrigBig = imresize(gobs(:,:,1), [ygt,xgt], 'bilinear');
-
-% imOrigBig = imresize(gobs(:,:,1), us_factor, 'bilinear');
-
-size(imOrigBig)
-pause
 X=imOrigBig;
 X_prev = X;
 E = [];
@@ -84,26 +77,19 @@ while iter < max_iter
         xshift = Rvecs(1,1,i); yshift=Rvecs(2,1,i); rot=Rvecs(3,1,i);
         
         temp = imtranslate(X, -[(us_factor * xshift), (us_factor * yshift)]);
-        size(temp)
-        pause;
+        
         temp = imrotate(temp, rot, 'bilinear', 'crop');
         
         %temp = PSF * temp;
-        temp = imfilter(temp, blur, 'symmetric', 'same');
+        temp = imfilter(temp, blur, 'replicate', 'same');
         
         temp = temp(1:us_factor:end, 1:us_factor:end);
-        size(temp)
-        pause;
-%         size(temp)
-%         size(gobs(:,:,i))
-%         pause
-        size(gobs(:,:,i))
-        pause;
+        
         temp = temp - gobs(:,:,i);
         temp = imresize(temp, us_factor, 'box');
         
         %temp = PSF' * temp;
-        temp = imfilter(temp, sharpen, 'symmetric', 'same');
+        temp = imfilter(temp, sharpen, 'replicate', 'same');
         
         temp = imrotate(temp, -rot, 'bilinear', 'crop');
         G = G + imtranslate(temp, [(us_factor * xshift), (us_factor * yshift)]);
