@@ -9,6 +9,7 @@ function [new_data,combined_img] = TransformImages(data, shifts, dsmpY, dsmpX, r
         nearest_x = round(shifts(1,i,2));%/sx);
         nearest_y = round(shifts(1,i,1));%/sy);        
         X = circshift(tmp,[nearest_x, nearest_y]);
+%         X = imtranslate(tmp, [nearest_y, nearest_x], 'bilinear');
         new_data(:,:,i) = X;
         combined_img = combined_img + new_data(:,:,i);
     end

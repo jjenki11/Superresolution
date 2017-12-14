@@ -15,6 +15,9 @@ function [out]=GenerateTransformedImages(in,rots,x_sh,y_sh,ds_fa,pad)
 %         filter2(h*h',imtranslate(imrotate(Ip,rots(1,i),'bilinear','crop'),...
 %                   [x_sh(1,i),y_sh(1,i)])), ds_fa);      
 %               ds_fa
+        figure(555),
+        imagesc(out(:,:,i)), colormap 'gray'
+        pause(1/10);
         waitbar(i/iters,hb);
     end
     pause(1/20);

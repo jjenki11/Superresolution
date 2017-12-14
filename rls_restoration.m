@@ -62,8 +62,7 @@ while iter < max_iter
         temp = imfilter(temp, blur, 'replicate', 'same');        
         [syy,sxx] = size(temp);
         [gyy,gxx] = size(gobs(:,:,i));
-        dy=syy/gyy
-        dx=sxx/gxx
+        dy=syy/gyy; dx=sxx/gxx;
         temp = temp(1:dy:end, 1:dx:end);               
         [ss,ts]=size(X); 
         temp = temp - gobs(:,:,i);          
@@ -79,7 +78,7 @@ while iter < max_iter
     X = X - (alpha) * G;   
     %max(X(:))
     %max(G(:))
-    X = X / max(X(:));
+%     X = X / max(X(:));
     delta = norm(X-X_prev)/norm(X);
     E=[E; iter delta];
     cost(iter) = delta;
