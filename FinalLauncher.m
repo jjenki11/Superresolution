@@ -6,8 +6,8 @@ do_inspect =0;  % whether we want to display images for investigation
 %   Initialize data and simulated images
 
 %   Initialize data and simulated images
-data = double(ReadData('Data/','dwn_lr_','.png'));% Read in the Low res data                        
-ref_img = imread('Data/ref_frame.png');          % Read in the HR ref image
+data = double(ReadData('Data/Car_Controlled_microscanning/','dwn_lr_','.png'));% Read in the Low res data                        
+ref_img = imread('Data/Car_Controlled_microscanning/ref_frame.png');          % Read in the HR ref image
 
 [aa,bb,cc] = size(data);
 
